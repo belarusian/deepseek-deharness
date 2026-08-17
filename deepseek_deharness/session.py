@@ -35,7 +35,7 @@ class Session:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Session":
+    def from_dict(cls, data: dict) -> Session:
         """Rebuild a Session from a dict produced by to_dict()."""
         return cls(
             messages=list(data.get("messages", [])),

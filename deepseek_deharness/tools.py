@@ -7,7 +7,8 @@ the LLM expects. No DI, no composition.
 """
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 # A tool is a plain callable: (args: dict) -> Any
 Tool = Callable[[dict], Any]

@@ -8,7 +8,7 @@ composition layer.
 """
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
 
 from .run import run
 from .tools import builtin_tools

@@ -15,7 +15,8 @@ No plugin layer. No DI container. No meta-composition.
 """
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from .llm_adapter import call_llm
 from .log import Log
@@ -43,12 +44,10 @@ def inner_spoke(
         session.append({"role": "user", "content": goal})
 
     schema = to_openai_tools(tools)
-    resp = call_llm(
-        session.messages,
-        model,
-        transport=transport,
-        tools=schema or None,
-    )
+    kwargs: dict[str, Any] = {"tools": schema or None}
+    if transport is not None:
+        kwargs["transport"] = transport
+    resp = call_llm(session.messages, model, **kwargs)
 
     step: dict[str, Any] = {
         "content": resp.get("content"),

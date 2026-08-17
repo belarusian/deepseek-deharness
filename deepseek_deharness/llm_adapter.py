@@ -7,7 +7,8 @@ callable you may swap in tests.
 """
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 # transport(payload: dict) -> dict  (the only injectable seam)
 Transport = Callable[[dict], dict]
@@ -30,7 +31,7 @@ def _default_transport(payload: dict) -> dict:
         },
         method="POST",
     )
-    with urllib.request.urlopen(req) as resp:  # noqa: S310
+    with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
