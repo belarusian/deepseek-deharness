@@ -13,6 +13,7 @@ from __future__ import annotations
 from .harness import run_harness
 from .llm_adapter import call_llm
 from .log import Log
+from .replay import reconstruct_session, replay
 from .run import inner_spoke, outer_spoke, run
 from .session import Session
 from .tools import builtin_tools, dispatch, make_tool, to_openai_tools
@@ -29,6 +30,8 @@ __all__ = [
     "inner_spoke",
     "make_tool",
     "outer_spoke",
+    "reconstruct_session",
+    "replay",
     "run",
     "run_harness",
     "to_openai_tools",
