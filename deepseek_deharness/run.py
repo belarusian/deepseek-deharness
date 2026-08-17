@@ -114,6 +114,36 @@ def run(
     The four algebra in action: loop the inner spoke (work + trajectory) and
     after each turn let the outer spoke reconcile the append-only log. Stops
     when the model returns a final answer (no tool calls) or max_turns is hit.
+
+    Example (stub transport, no real LLM)::
+
+        from deepseek_deharness.run import run
+        from deepseek_deharness.tools import builtin_tools
+
+        def stub(payload):
+            # Turn 1: ask for a tool; turn 2: final answer.
+            if any(m.get("role") == "tool" for m in payload["messages"]):
+                return {"choices": [{"message": {"content": "the answer is 5"}}]}
+            return {"choices": [{"message": {
+                "content": None,
+                "tool_calls": [{"id": "c1", "type": "function",
+                                "function": {"name": "add",
+                                             "arguments": '{"a": 2, "b": 3}'}}],
+            }}]}
+
+        result = run(
+            "add 2 and 3",
+            model="deepseek-v4-flash",
+            system="You are a calculator.",
+            tools=builtin_tools(),
+            log_path="/tmp/log.jsonl",
+            transport=stub,
+        )
+        # -> {"final_response": "the answer is 5",
+        #     "messages": [...], "log_length": 2}
+
+    Returns a dict with keys ``final_response`` (str | None), ``messages``
+    (list[dict]) and ``log_length`` (int, the reconciliation cursor).
     """
     tools = tools if tools is not None else []
     session = Session()
