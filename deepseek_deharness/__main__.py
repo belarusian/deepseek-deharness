@@ -3,7 +3,8 @@
 deepseek-harness runs via a Cordis host + profile. The inversion is a plain
 `python -m deepseek_deharness "goal"` that calls run_harness directly. A
 `--replay LOG` flag instead replays a finished run from its append-only log
-(the source of truth) without calling the LLM.
+(the source of truth) without calling the LLM, and a `--verify LOG` flag audits
+the log's invariants (exit 0 if healthy, 1 if any violation is found).
 """
 from __future__ import annotations
 
@@ -11,6 +12,7 @@ import argparse
 import os
 
 from .harness import run_harness
+from .repair import verify_log
 from .replay import replay
 
 
@@ -30,7 +32,22 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Replay a finished run from its append-only log instead of running fresh.",
     )
+    parser.add_argument(
+        "--verify",
+        metavar="LOG",
+        default=None,
+        help="Verify the append-only log's invariants; exit 0 if healthy, 1 on violation.",
+    )
     args = parser.parse_args(argv)
+
+    if args.verify is not None:
+        violations = verify_log(args.verify)
+        if not violations:
+            print("OK")
+            return 0
+        for v in violations:
+            print(f"[{v['index']}] {v['type']}: {v['detail']}")
+        return 1
 
     if args.replay is not None:
         result = replay(args.replay)
