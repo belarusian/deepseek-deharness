@@ -1,0 +1,1 @@
+Everything is a Function. The exact inverse of DeepSeek Harness — where dsh makes everything a Cordis plugin composed via profiles/bundles/patches, deharness is one monolithic agent harness: loop + tools + session + llm-adapter as plain functions, organized by the four algebra.
