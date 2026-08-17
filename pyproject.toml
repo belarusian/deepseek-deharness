@@ -1,0 +1,15 @@
+[project]
+name = "deepseek-deharness"
+version = "0.1.0"
+description = "A monolithic agent harness: loop + tools + session + llm-adapter as plain functions."
+requires-python = ">=3.10"
+
+[tool.pytest]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+ignore_missing_imports = true
