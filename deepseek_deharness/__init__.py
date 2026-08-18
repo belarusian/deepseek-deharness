@@ -19,6 +19,7 @@ from .replay import reconstruct_session, replay
 from .run import inner_spoke, outer_spoke, run
 from .session import Session
 from .tools import builtin_tools, dispatch, make_tool, to_openai_tools
+from .trace import extract_trajectory, trajectory_stats
 
 __version__ = "0.1.0"
 
@@ -30,6 +31,7 @@ __all__ = [
     "call_llm",
     "diff_logs",
     "dispatch",
+    "extract_trajectory",
     "inner_spoke",
     "make_tool",
     "outer_spoke",
@@ -40,5 +42,6 @@ __all__ = [
     "run_harness",
     "summarize_log",
     "to_openai_tools",
+    "trajectory_stats",
     "verify_log",
 ]
