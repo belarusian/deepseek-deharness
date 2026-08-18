@@ -24,6 +24,7 @@ from .log import Log
 from .manifest import batch_manifest
 from .repair import repair_log, verify_log
 from .replay import reconstruct_session, replay
+from .rollout import batch_rollout
 from .rollup import rollup_runs
 from .run import inner_spoke, outer_spoke, run
 from .session import Session
@@ -42,6 +43,7 @@ __all__ = [
     "batch_ledger",
     "batch_manifest",
     "batch_report",
+    "batch_rollout",
     "builtin_tools",
     "call_llm",
     "compact_log",
