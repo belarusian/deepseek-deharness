@@ -21,6 +21,7 @@ from .llm_adapter import call_llm
 from .log import Log
 from .repair import repair_log, verify_log
 from .replay import reconstruct_session, replay
+from .rollup import rollup_runs
 from .run import inner_spoke, outer_spoke, run
 from .session import Session
 from .summarize import summarize_runs
@@ -51,6 +52,7 @@ __all__ = [
     "reconstruct_session",
     "repair_log",
     "replay",
+    "rollup_runs",
     "run",
     "run_harness",
     "summarize_log",
