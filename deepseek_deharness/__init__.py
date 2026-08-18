@@ -18,6 +18,7 @@ from .compact import compact_log, estimate_tokens
 from .compare import compare_logs
 from .harness import run_harness
 from .inspect import diff_logs, summarize_log
+from .ledger import batch_ledger
 from .llm_adapter import call_llm
 from .log import Log
 from .manifest import batch_manifest
@@ -38,6 +39,7 @@ __all__ = [
     "__version__",
     "aggregate_runs",
     "audit_log",
+    "batch_ledger",
     "batch_manifest",
     "batch_report",
     "builtin_tools",
