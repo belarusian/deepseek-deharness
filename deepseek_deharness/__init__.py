@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from .aggregate import aggregate_runs
 from .audit import audit_log
+from .batch import batch_report
 from .budget import fits_budget, plan_compaction
 from .compact import compact_log, estimate_tokens
 from .compare import compare_logs
@@ -36,6 +37,7 @@ __all__ = [
     "__version__",
     "aggregate_runs",
     "audit_log",
+    "batch_report",
     "builtin_tools",
     "call_llm",
     "compact_log",

@@ -13,6 +13,7 @@ import os
 
 from .aggregate import aggregate_runs
 from .audit import audit_log
+from .batch import batch_report
 from .budget import fits_budget, plan_compaction
 from .compact import compact_log
 from .compare import compare_logs
@@ -117,6 +118,14 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Print a multi-run rollup (aggregate + per-log size) over one or more append-only logs; exit 0 iff all are healthy else 1.",
     )
+    parser.add_argument(
+        "--batch",
+        metavar="LOG",
+        nargs="+",
+        type=str,
+        default=None,
+        help="Print a multi-run batch report (rollup + per-log health) over one or more append-only logs; exit 0 iff all are healthy else 1.",
+    )
     args = parser.parse_args(argv)
 
     if args.verify is not None:
@@ -219,6 +228,27 @@ def main(argv: list[str] | None = None) -> int:
             zip(result["final_responses"], result["estimated_tokens_per_log"])
         ):
             print(f"log {i}: final_response={value if value is not None else '-'} estimated_tokens={est}")
+        return 0 if result["all_healthy"] else 1
+
+    if args.batch is not None:
+        result = batch_report(args.batch)
+        print(f"runs={result['runs']}")
+        print(f"all_healthy={'yes' if result['all_healthy'] else 'no'}")
+        print(f"total_entries={result['total_entries']}")
+        print(f"max_estimated_tokens={result['max_estimated_tokens']}")
+        print(f"identical_all={'yes' if result['identical_all'] else 'no'}")
+        print(f"tool_calls_total={result['tool_calls_total']}")
+        for i, (healthy, value, est) in enumerate(
+            zip(
+                result["healthy_per_log"],
+                result["final_responses"],
+                result["estimated_tokens_per_log"],
+            )
+        ):
+            print(
+                f"log {i}: healthy={'yes' if healthy else 'no'} "
+                f"final_response={value if value is not None else '-'} estimated_tokens={est}"
+            )
         return 0 if result["all_healthy"] else 1
 
     if args.inspect is not None:
