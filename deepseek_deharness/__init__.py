@@ -20,6 +20,7 @@ from .harness import run_harness
 from .inspect import diff_logs, summarize_log
 from .llm_adapter import call_llm
 from .log import Log
+from .manifest import batch_manifest
 from .repair import repair_log, verify_log
 from .replay import reconstruct_session, replay
 from .rollup import rollup_runs
@@ -37,6 +38,7 @@ __all__ = [
     "__version__",
     "aggregate_runs",
     "audit_log",
+    "batch_manifest",
     "batch_report",
     "builtin_tools",
     "call_llm",

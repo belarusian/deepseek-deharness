@@ -19,6 +19,7 @@ from .compact import compact_log
 from .compare import compare_logs
 from .harness import run_harness
 from .inspect import summarize_log
+from .manifest import batch_manifest
 from .repair import verify_log
 from .replay import replay
 from .rollup import rollup_runs
@@ -125,6 +126,14 @@ def main(argv: list[str] | None = None) -> int:
         type=str,
         default=None,
         help="Print a multi-run batch report (rollup + per-log health) over one or more append-only logs; exit 0 iff all are healthy else 1.",
+    )
+    parser.add_argument(
+        "--manifest",
+        metavar="LOG",
+        nargs="+",
+        type=str,
+        default=None,
+        help="Print a multi-run manifest (batch + per-log final-response presence) over one or more append-only logs; exit 0 iff all are healthy else 1.",
     )
     args = parser.parse_args(argv)
 
@@ -248,6 +257,29 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"log {i}: healthy={'yes' if healthy else 'no'} "
                 f"final_response={value if value is not None else '-'} estimated_tokens={est}"
+            )
+        return 0 if result["all_healthy"] else 1
+
+    if args.manifest is not None:
+        result = batch_manifest(args.manifest)
+        print(f"runs={result['runs']}")
+        print(f"all_healthy={'yes' if result['all_healthy'] else 'no'}")
+        print(f"total_entries={result['total_entries']}")
+        print(f"max_estimated_tokens={result['max_estimated_tokens']}")
+        print(f"identical_all={'yes' if result['identical_all'] else 'no'}")
+        print(f"tool_calls_total={result['tool_calls_total']}")
+        for i, (healthy, value, est, has_fr) in enumerate(
+            zip(
+                result["healthy_per_log"],
+                result["final_responses"],
+                result["estimated_tokens_per_log"],
+                result["has_final_response_per_log"],
+            )
+        ):
+            print(
+                f"log {i}: healthy={'yes' if healthy else 'no'} "
+                f"final_response={value if value is not None else '-'} estimated_tokens={est} "
+                f"has_final_response={'yes' if has_fr else 'no'}"
             )
         return 0 if result["all_healthy"] else 1
 
