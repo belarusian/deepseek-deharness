@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import os
 
+from .audit import audit_log
 from .budget import fits_budget, plan_compaction
 from .compact import compact_log
 from .harness import run_harness
@@ -74,6 +75,12 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Check whether an append-only log fits a token budget and print the planned compaction.",
     )
+    parser.add_argument(
+        "--audit",
+        metavar="LOG",
+        default=None,
+        help="Print a one-line-per-field health report for an append-only log; exit 0 if healthy else 1.",
+    )
     args = parser.parse_args(argv)
 
     if args.verify is not None:
@@ -112,6 +119,16 @@ def main(argv: list[str] | None = None) -> int:
         print(f"max_messages={plan['max_messages']}")
         print(f"estimated_tokens_after={plan['estimated_tokens_after']}")
         return 0
+
+    if args.audit is not None:
+        report = audit_log(args.audit)
+        print(f"entries={report['entries']}")
+        print(f"healthy={'yes' if report['healthy'] else 'no'}")
+        print(f"violations={len(report['violations'])}")
+        print(f"final_response={report['final_response']}")
+        print(f"tool_calls={report['tool_calls']}")
+        print(f"estimated_tokens={report['estimated_tokens']}")
+        return 0 if report["healthy"] else 1
 
     if args.inspect is not None:
         summary = summarize_log(args.inspect)
