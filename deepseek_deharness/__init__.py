@@ -16,6 +16,7 @@ from .batch import batch_report
 from .budget import fits_budget, plan_compaction
 from .compact import compact_log, estimate_tokens
 from .compare import compare_logs
+from .detail import batch_detail
 from .harness import run_harness
 from .inspect import diff_logs, summarize_log
 from .ledger import batch_ledger
@@ -41,6 +42,7 @@ __all__ = [
     "__version__",
     "aggregate_runs",
     "audit_log",
+    "batch_detail",
     "batch_ledger",
     "batch_manifest",
     "batch_report",
