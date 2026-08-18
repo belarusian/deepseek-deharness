@@ -15,6 +15,7 @@ from .harness import run_harness
 from .inspect import summarize_log
 from .repair import verify_log
 from .replay import replay
+from .trace import extract_trajectory
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -45,6 +46,12 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Print a human-readable summary of an append-only log and exit 0.",
     )
+    parser.add_argument(
+        "--trace",
+        metavar="LOG",
+        default=None,
+        help="Print one line per turn from an append-only log's trajectory and exit 0.",
+    )
     args = parser.parse_args(argv)
 
     if args.verify is not None:
@@ -55,6 +62,17 @@ def main(argv: list[str] | None = None) -> int:
         for v in violations:
             print(f"[{v['index']}] {v['type']}: {v['detail']}")
         return 1
+
+    if args.trace is not None:
+        for record in extract_trajectory(args.trace):
+            content = record["content"]
+            tools = ",".join(str(n) for n in record["tool_calls"]) or "-"
+            results = len(record["tool_results"])
+            print(
+                f"turn {record['turn']}: {content if content is not None else '-'} "
+                f"tools=[{tools}] results={results}"
+            )
+        return 0
 
     if args.inspect is not None:
         summary = summarize_log(args.inspect)
