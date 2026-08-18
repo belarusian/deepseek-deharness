@@ -29,6 +29,7 @@ from .rollup import rollup_runs
 from .run import inner_spoke, outer_spoke, run
 from .session import Session
 from .summarize import summarize_runs
+from .summary import batch_summary
 from .tools import builtin_tools, dispatch, make_tool, to_openai_tools
 from .trace import extract_trajectory, trajectory_stats
 
@@ -44,6 +45,7 @@ __all__ = [
     "batch_manifest",
     "batch_report",
     "batch_rollout",
+    "batch_summary",
     "builtin_tools",
     "call_llm",
     "compact_log",
