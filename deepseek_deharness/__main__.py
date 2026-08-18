@@ -20,6 +20,7 @@ from .harness import run_harness
 from .inspect import summarize_log
 from .repair import verify_log
 from .replay import replay
+from .rollup import rollup_runs
 from .summarize import summarize_runs
 from .trace import extract_trajectory
 
@@ -107,6 +108,14 @@ def main(argv: list[str] | None = None) -> int:
         type=str,
         default=None,
         help="Print a multi-run report (rollup + per-log final responses) over one or more append-only logs; exit 0 iff all are healthy else 1.",
+    )
+    parser.add_argument(
+        "--rollup",
+        metavar="LOG",
+        nargs="+",
+        type=str,
+        default=None,
+        help="Print a multi-run rollup (aggregate + per-log size) over one or more append-only logs; exit 0 iff all are healthy else 1.",
     )
     args = parser.parse_args(argv)
 
@@ -196,6 +205,20 @@ def main(argv: list[str] | None = None) -> int:
         print(f"tool_calls_total={result['tool_calls_total']}")
         for i, value in enumerate(result["final_responses"]):
             print(f"log {i}: final_response={value if value is not None else '-'}")
+        return 0 if result["all_healthy"] else 1
+
+    if args.rollup is not None:
+        result = rollup_runs(args.rollup)
+        print(f"runs={result['runs']}")
+        print(f"all_healthy={'yes' if result['all_healthy'] else 'no'}")
+        print(f"total_entries={result['total_entries']}")
+        print(f"max_estimated_tokens={result['max_estimated_tokens']}")
+        print(f"identical_all={'yes' if result['identical_all'] else 'no'}")
+        print(f"tool_calls_total={result['tool_calls_total']}")
+        for i, (value, est) in enumerate(
+            zip(result["final_responses"], result["estimated_tokens_per_log"])
+        ):
+            print(f"log {i}: final_response={value if value is not None else '-'} estimated_tokens={est}")
         return 0 if result["all_healthy"] else 1
 
     if args.inspect is not None:
