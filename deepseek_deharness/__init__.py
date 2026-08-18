@@ -13,6 +13,7 @@ from __future__ import annotations
 from .audit import audit_log
 from .budget import fits_budget, plan_compaction
 from .compact import compact_log, estimate_tokens
+from .compare import compare_logs
 from .harness import run_harness
 from .inspect import diff_logs, summarize_log
 from .llm_adapter import call_llm
@@ -34,6 +35,7 @@ __all__ = [
     "builtin_tools",
     "call_llm",
     "compact_log",
+    "compare_logs",
     "diff_logs",
     "dispatch",
     "estimate_tokens",
