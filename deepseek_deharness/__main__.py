@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import os
 
+from .aggregate import aggregate_runs
 from .audit import audit_log
 from .budget import fits_budget, plan_compaction
 from .compact import compact_log
@@ -99,6 +100,14 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Print a multi-run rollup over one or more append-only logs; exit 0 iff all are healthy else 1.",
     )
+    parser.add_argument(
+        "--aggregate",
+        metavar="LOG",
+        nargs="+",
+        type=str,
+        default=None,
+        help="Print a multi-run report (rollup + per-log final responses) over one or more append-only logs; exit 0 iff all are healthy else 1.",
+    )
     args = parser.parse_args(argv)
 
     if args.verify is not None:
@@ -175,6 +184,18 @@ def main(argv: list[str] | None = None) -> int:
                 f"healthy={'yes' if rep['healthy'] else 'no'} "
                 f"estimated_tokens={rep['estimated_tokens']}"
             )
+        return 0 if result["all_healthy"] else 1
+
+    if args.aggregate is not None:
+        result = aggregate_runs(args.aggregate)
+        print(f"runs={result['runs']}")
+        print(f"all_healthy={'yes' if result['all_healthy'] else 'no'}")
+        print(f"total_entries={result['total_entries']}")
+        print(f"max_estimated_tokens={result['max_estimated_tokens']}")
+        print(f"identical_all={'yes' if result['identical_all'] else 'no'}")
+        print(f"tool_calls_total={result['tool_calls_total']}")
+        for i, value in enumerate(result["final_responses"]):
+            print(f"log {i}: final_response={value if value is not None else '-'}")
         return 0 if result["all_healthy"] else 1
 
     if args.inspect is not None:

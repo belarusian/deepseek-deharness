@@ -10,6 +10,7 @@ agent is 40+ Cordis plugins composed by profiles/bundles/patches.
 """
 from __future__ import annotations
 
+from .aggregate import aggregate_runs
 from .audit import audit_log
 from .budget import fits_budget, plan_compaction
 from .compact import compact_log, estimate_tokens
@@ -32,6 +33,7 @@ __all__ = [
     "Log",
     "Session",
     "__version__",
+    "aggregate_runs",
     "audit_log",
     "builtin_tools",
     "call_llm",
