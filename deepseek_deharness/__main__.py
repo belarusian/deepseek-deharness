@@ -19,6 +19,7 @@ from .harness import run_harness
 from .inspect import summarize_log
 from .repair import verify_log
 from .replay import replay
+from .summarize import summarize_runs
 from .trace import extract_trajectory
 
 
@@ -90,6 +91,14 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Print a side-by-side health comparison of two append-only logs; exit 0 iff both are healthy else 1.",
     )
+    parser.add_argument(
+        "--summarize",
+        metavar="LOG",
+        nargs="+",
+        type=str,
+        default=None,
+        help="Print a multi-run rollup over one or more append-only logs; exit 0 iff all are healthy else 1.",
+    )
     args = parser.parse_args(argv)
 
     if args.verify is not None:
@@ -152,6 +161,21 @@ def main(argv: list[str] | None = None) -> int:
         divergent = result["divergent_at"]
         print(f"divergent_at={divergent if divergent is not None else '-'}")
         return 0 if (result["a"]["healthy"] and result["b"]["healthy"]) else 1
+
+    if args.summarize is not None:
+        result = summarize_runs(args.summarize)
+        print(f"runs={result['runs']}")
+        print(f"all_healthy={'yes' if result['all_healthy'] else 'no'}")
+        print(f"total_entries={result['total_entries']}")
+        print(f"max_estimated_tokens={result['max_estimated_tokens']}")
+        print(f"identical_all={'yes' if result['identical_all'] else 'no'}")
+        for i, rep in enumerate(result["logs"]):
+            print(
+                f"log {i}: entries={rep['entries']} "
+                f"healthy={'yes' if rep['healthy'] else 'no'} "
+                f"estimated_tokens={rep['estimated_tokens']}"
+            )
+        return 0 if result["all_healthy"] else 1
 
     if args.inspect is not None:
         summary = summarize_log(args.inspect)
