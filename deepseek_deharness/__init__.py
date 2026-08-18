@@ -22,6 +22,7 @@ from .repair import repair_log, verify_log
 from .replay import reconstruct_session, replay
 from .run import inner_spoke, outer_spoke, run
 from .session import Session
+from .summarize import summarize_runs
 from .tools import builtin_tools, dispatch, make_tool, to_openai_tools
 from .trace import extract_trajectory, trajectory_stats
 
@@ -51,6 +52,7 @@ __all__ = [
     "run",
     "run_harness",
     "summarize_log",
+    "summarize_runs",
     "to_openai_tools",
     "trajectory_stats",
     "verify_log",
