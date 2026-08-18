@@ -11,6 +11,7 @@ agent is 40+ Cordis plugins composed by profiles/bundles/patches.
 from __future__ import annotations
 
 from .harness import run_harness
+from .inspect import diff_logs, summarize_log
 from .llm_adapter import call_llm
 from .log import Log
 from .repair import repair_log, verify_log
@@ -27,6 +28,7 @@ __all__ = [
     "__version__",
     "builtin_tools",
     "call_llm",
+    "diff_logs",
     "dispatch",
     "inner_spoke",
     "make_tool",
@@ -36,6 +38,7 @@ __all__ = [
     "replay",
     "run",
     "run_harness",
+    "summarize_log",
     "to_openai_tools",
     "verify_log",
 ]
