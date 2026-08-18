@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import os
 
+from .compact import compact_log
 from .harness import run_harness
 from .inspect import summarize_log
 from .repair import verify_log
@@ -52,6 +53,18 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Print one line per turn from an append-only log's trajectory and exit 0.",
     )
+    parser.add_argument(
+        "--compact",
+        metavar="LOG",
+        default=None,
+        help="Write a compacted copy of an append-only log to a temp file and print its path.",
+    )
+    parser.add_argument(
+        "--max-messages",
+        type=int,
+        default=4,
+        help="Max messages per entry when using --compact (default 4).",
+    )
     args = parser.parse_args(argv)
 
     if args.verify is not None:
@@ -72,6 +85,14 @@ def main(argv: list[str] | None = None) -> int:
                 f"turn {record['turn']}: {content if content is not None else '-'} "
                 f"tools=[{tools}] results={results}"
             )
+        return 0
+
+    if args.compact is not None:
+        result = compact_log(args.compact, max_messages=args.max_messages)
+        print(f"path={result['path']}")
+        print(f"entries={result['entries']}")
+        print(f"messages_before={result['messages_before']}")
+        print(f"messages_after={result['messages_after']}")
         return 0
 
     if args.inspect is not None:
