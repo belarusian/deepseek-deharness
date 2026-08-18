@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import os
 
+from .budget import fits_budget, plan_compaction
 from .compact import compact_log
 from .harness import run_harness
 from .inspect import summarize_log
@@ -65,6 +66,14 @@ def main(argv: list[str] | None = None) -> int:
         default=4,
         help="Max messages per entry when using --compact (default 4).",
     )
+    parser.add_argument(
+        "--budget",
+        metavar="LOG",
+        nargs=2,
+        type=str,
+        default=None,
+        help="Check whether an append-only log fits a token budget and print the planned compaction.",
+    )
     args = parser.parse_args(argv)
 
     if args.verify is not None:
@@ -93,6 +102,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"entries={result['entries']}")
         print(f"messages_before={result['messages_before']}")
         print(f"messages_after={result['messages_after']}")
+        return 0
+
+    if args.budget is not None:
+        budget_log, budget_max_tokens = args.budget[0], int(args.budget[1])
+        fits = fits_budget(budget_log, max_tokens=budget_max_tokens)
+        plan = plan_compaction(budget_log, max_tokens=budget_max_tokens)
+        print(f"fits={'yes' if fits else 'no'}")
+        print(f"max_messages={plan['max_messages']}")
+        print(f"estimated_tokens_after={plan['estimated_tokens_after']}")
         return 0
 
     if args.inspect is not None:
